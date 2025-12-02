@@ -1,70 +1,88 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { v4 as uuidv4 } from 'uuid';
+import { createSlice } from "@reduxjs/toolkit";
+import { v4 as uuidv4 } from "uuid";
 
 const initialState = {
-  items: [], // array of { id, text, category, completed, createdAt }
-  filterText: '',
-  filterCategory: 'ALL',
+  items: [],
+  filterText: "",
+  filterCategory: "ALL",
 };
+
+const STORAGE_KEY = "tasks_state";
 
 const saveToStorage = (state) => {
   try {
-    localStorage.setItem('tasks_state', JSON.stringify(state));
-  } catch (e) { /* ignore */ }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {}
 };
 
 const loadFromStorage = () => {
   try {
-    const raw = localStorage.getItem('tasks_state');
-    if (!raw) return initialState;
-    return JSON.parse(raw);
-  } catch (e) {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : initialState;
+  } catch {
     return initialState;
   }
 };
 
 const tasksSlice = createSlice({
-  name: 'tasks',
+  name: "tasks",
   initialState: loadFromStorage(),
+
   reducers: {
     addTask: {
-      reducer(state, action) {
-        state.items.unshift(action.payload);
-        saveToStorage(state);
-      },
       prepare({ text, category }) {
         return {
           payload: {
             id: uuidv4(),
-            text,
-            category,
-            completed: false,
+            text: text || "",
+            category: category || "GENERAL",
+            status: "NEW",
             createdAt: new Date().toISOString(),
           },
         };
       },
+      reducer(state, action) {
+        state.items.unshift(action.payload);
+        saveToStorage(state);
+      },
     },
+
     deleteTask(state, action) {
-      state.items = state.items.filter(t => t.id !== action.payload);
+      state.items = state.items.filter((task) => task.id !== action.payload);
       saveToStorage(state);
     },
+
     toggleComplete(state, action) {
-      const t = state.items.find(it => it.id === action.payload);
-      if (t) t.completed = !t.completed;
+      state.items = state.items.map((task) => {
+        if (task.id !== action.payload) return task;
+        const newStatus = task.status === "COMPLETED" ? "IN PROGRESS" : "COMPLETED";
+        return { ...task, status: newStatus };
+      });
       saveToStorage(state);
     },
+
+    updateStatus(state, action) {
+      const { id, status } = action.payload;
+      state.items = state.items.map((task) =>
+        task.id === id ? { ...task, status } : task
+      );
+      saveToStorage(state);
+    },
+
     setFilterText(state, action) {
       state.filterText = action.payload;
-      // don't save filters to storage if you prefer; but okay to save:
       saveToStorage(state);
     },
+
     setFilterCategory(state, action) {
       state.filterCategory = action.payload;
       saveToStorage(state);
     },
-    loadInitial(state, action) {
+
+    loadInitial() {
       return loadFromStorage();
     },
+
     clearAll(state) {
       state.items = [];
       saveToStorage(state);
@@ -73,7 +91,14 @@ const tasksSlice = createSlice({
 });
 
 export const {
-  addTask, deleteTask, toggleComplete, setFilterText, setFilterCategory, loadInitial, clearAll,
+  addTask,
+  deleteTask,
+  toggleComplete,
+  setFilterText,
+  setFilterCategory,
+  loadInitial,
+  clearAll,
+  updateStatus,
 } = tasksSlice.actions;
 
 export default tasksSlice.reducer;

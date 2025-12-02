@@ -1,43 +1,58 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Card, CardContent, TextField, MenuItem, Box, Stack } from '@mui/material';
-import { setFilterText, setFilterCategory } from '../features/tasksSlice';
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  Card,
+  CardContent,
+  TextField,
+  MenuItem,
+  Box,
+  Typography,
+} from "@mui/material";
+import { setFilterText, setFilterCategory } from "../features/tasksSlice";
 
-const CATEGORIES = ['ALL', 'Work', 'Personal', 'Shopping', 'Others'];
+const CATEGORIES = ["ALL", "Work", "Personal", "Shopping", "Others"];
 
 const TaskFilters = () => {
   const dispatch = useDispatch();
-  const filterText = useSelector(s => s.tasks.filterText);
-  const filterCategory = useSelector(s => s.tasks.filterCategory);
+  const { filterText, filterCategory } = useSelector((s) => s.tasks);
+
+  const handleText = (e) => dispatch(setFilterText(e.target.value));
+  const handleCategory = (e) => dispatch(setFilterCategory(e.target.value));
 
   return (
-    <Card sx={{ width: '100%'}}>
+    <Card sx={{ width: "100%" }}>
       <CardContent>
-        <Box sx={{ 
-            display: 'flex', 
-            gap: 2, 
-            justifyContent: 'center', 
-            alignItems: 'center' 
-          }}>
+        <Typography variant="h6" gutterBottom>
+          Filter Tasks
+        </Typography>
+
+        <Box
+          sx={{
+            display: "flex",
+            gap: 2,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <TextField
             label="Search"
             value={filterText}
-            onChange={(e) => dispatch(setFilterText(e.target.value))}
+            onChange={handleText}
             margin="normal"
-            sx={{flex:1}}
+            sx={{ flex: 1 }}
           />
 
           <TextField
             select
-            label="Category"
+            label="Filter by Category"
             value={filterCategory}
-            onChange={(e) => dispatch(setFilterCategory(e.target.value))}
+            onChange={handleCategory}
             margin="normal"
-            sx={{flex:1}}
+            sx={{ flex: 1 }}
           >
-            {CATEGORIES.map(c => (
+            {CATEGORIES.map((c) => (
               <MenuItem key={c} value={c}>
-                {c === 'ALL' ? 'All categories' : c}
+                {c === "ALL" ? "All categories" : c}
               </MenuItem>
             ))}
           </TextField>
