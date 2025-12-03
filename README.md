@@ -25,6 +25,11 @@ Manage tasks with statuses, filters, and localStorage persistence. Fully respons
 
 ---
 
+## View on GitHub Pages
+[https://tamiberlin.github.io/task-manager/]
+
+---
+
 ## Setup
 
 1. Clone the repo:
@@ -35,6 +40,4 @@ cd task-manager
 
 ---
 
-## View on GitHub Pages
-[https://tamiberlin.github.io/task-manager/]
 
