@@ -32,3 +32,9 @@ Manage tasks with statuses, filters, and localStorage persistence. Fully respons
 git clone [https://github.com/tamiberlin/task-manager.git]
 
 cd task-manager
+
+---
+
+## View on GitHub Pages
+[https://tamiberlin.github.io/task-manager/]
+
